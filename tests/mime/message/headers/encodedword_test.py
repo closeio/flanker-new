@@ -157,3 +157,11 @@ def test_convert_to_utf8_unknown_encoding():
 @patch.object(encodedword, 'unfold', Mock(side_effect=Exception))
 def test_error_reporting():
     eq_("Sasha", encodedword.mime_to_unicode("Sasha"))
+
+def test_mime_to_unicode_base64():
+    v = '=?BASE64?B?WW91J3JlIGNob3NlbiB0byB0YWtlIGEgMTAgcXVlc3Rpb24=?= survey'
+    eq_("You're chosen to take a 10 question survey",
+        encodedword.mime_to_unicode(v))
+
+    v = 'test =?BASE64?B?4oCm?='
+    eq_("test …", encodedword.mime_to_unicode(v))
