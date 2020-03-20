@@ -102,13 +102,24 @@ def concatenate(parts):
     becomes:
 
          URL="ftp://cs.utk.edu/pub/moore/bulk-mailer/bulk-mailer.tar"
+
+    Args:
+      parts (list): list of tuples in one of these two formats:
+          - (_PARAM_STYLE_OLD, attribute_name, value)
+          - (_PARAM_STYLE_NEW, (attribute_name, section, encoded), value)
+              where `section` may be None or the section parameter (as per
+              section 3 of RFC 2231: "*0", "*1", ...) and `encoded` may be None
+              or "*" if the parameter is encoded (as per section 4 of RFC 2231)
     """
     part = parts[0]
     if is_old_style(part):
         # old-style parameters do not support any continuations
         return encodedword.mime_to_unicode(get_value(part))
-
-    return ''.join(decode_new_style(p) for p in partition(parts))
+    elif is_single_part(part):
+        return decode_new_style(part)
+    else:
+        splitted_parts = (part for part in parts if not is_single_part(part))
+        return ''.join(decode_new_style(p) for p in partition(splitted_parts))
 
 
 def match_parameter(rest):
@@ -232,6 +243,10 @@ def is_old_style(parameter):
 
 def is_encoded(part):
     return part[1][2] == '*'
+
+
+def is_single_part(part):
+    return part[1][1] is None
 
 
 def get_key(parameter):
