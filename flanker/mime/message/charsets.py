@@ -23,7 +23,12 @@ def convert_to_unicode(charset, value):
 def _ensure_charset(charset):
     charset = charset.lower()
     try:
-        codecs.lookup(charset)
+        info = codecs.lookup(charset)
+        # Occasionally, the encoding for a GBK/GB 18030 string is incorrectly
+        # specified as GB 2312. Since GB 18030 is compatible with GB 2312 and
+        # GBK, we can use that.
+        if info.name in ('gb2312', 'gbk'):
+            return 'gb18030'
         return charset
     except LookupError:
         pass
