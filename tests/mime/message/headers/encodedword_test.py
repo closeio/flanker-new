@@ -113,7 +113,7 @@ def hotmail_encodings_test():
     eq_(u"Это сообщение с длинным сабжектом специально чтобы проверить кодировки", encodedword.mime_to_unicode(v))
 
 
-def various_encodings_test():
+def test_various_encodings():
     v = '"=?utf-8?b?6ICD5Y+W5YiG5Lqr?=" <foo@example.com>'
     eq_(u'"考取分享" <foo@example.com>', encodedword.mime_to_unicode(v))
 
@@ -137,6 +137,15 @@ def various_encodings_test():
 
     v = u'=?gb18030?Q?Hey_There=D7=B2=D8=B0?='
     eq_(u'Hey There撞匕', encodedword.mime_to_unicode(v))
+
+    v = u'=?gb2312?Q?Hey_There=2D=8C=8D=BE=B0?='
+    eq_(u'Hey There-實景', encodedword.mime_to_unicode(v))
+
+    v = u'=?gbk?Q?Hey_There=2D=8C=8D=BE=B0?='
+    eq_(u'Hey There-實景', encodedword.mime_to_unicode(v))
+
+    v = u'=?gb18030?Q?Hey_There=2D=8C=8D=BE=B0?='
+    eq_(u'Hey There-實景', encodedword.mime_to_unicode(v))
 
     v = parse(u'Тест длинного дисплей нейма <test@example.com>')
     eq_(v.display_name, encodedword.mime_to_unicode(v.ace_display_name))
