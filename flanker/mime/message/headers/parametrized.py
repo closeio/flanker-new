@@ -213,7 +213,7 @@ def decode_charset(parameter):
     if len(parts) != 3:
         return v
     charset, language, val = parts
-    val = urllib_parse.unquote(val)
+    val = urllib_parse.unquote_to_bytes(val)
     return charsets.convert_to_unicode(charset, val)
 
 
