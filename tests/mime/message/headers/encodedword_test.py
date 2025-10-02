@@ -113,7 +113,7 @@ def hotmail_encodings_test():
     eq_(u"Это сообщение с длинным сабжектом специально чтобы проверить кодировки", encodedword.mime_to_unicode(v))
 
 
-def various_encodings_test():
+def test_various_encodings():
     v = '"=?utf-8?b?6ICD5Y+W5YiG5Lqr?=" <foo@example.com>'
     eq_(u'"考取分享" <foo@example.com>', encodedword.mime_to_unicode(v))
 
@@ -138,6 +138,15 @@ def various_encodings_test():
     v = u'=?gb18030?Q?Hey_There=D7=B2=D8=B0?='
     eq_(u'Hey There撞匕', encodedword.mime_to_unicode(v))
 
+    v = u'=?gb2312?Q?Hey_There=2D=8C=8D=BE=B0?='
+    eq_(u'Hey There-實景', encodedword.mime_to_unicode(v))
+
+    v = u'=?gbk?Q?Hey_There=2D=8C=8D=BE=B0?='
+    eq_(u'Hey There-實景', encodedword.mime_to_unicode(v))
+
+    v = u'=?gb18030?Q?Hey_There=2D=8C=8D=BE=B0?='
+    eq_(u'Hey There-實景', encodedword.mime_to_unicode(v))
+
     v = parse(u'Тест длинного дисплей нейма <test@example.com>')
     eq_(v.display_name, encodedword.mime_to_unicode(v.ace_display_name))
 
@@ -157,3 +166,11 @@ def test_convert_to_utf8_unknown_encoding():
 @patch.object(encodedword, 'unfold', Mock(side_effect=Exception))
 def test_error_reporting():
     eq_("Sasha", encodedword.mime_to_unicode("Sasha"))
+
+def test_mime_to_unicode_base64():
+    v = '=?BASE64?B?WW91J3JlIGNob3NlbiB0byB0YWtlIGEgMTAgcXVlc3Rpb24=?= survey'
+    eq_("You're chosen to take a 10 question survey",
+        encodedword.mime_to_unicode(v))
+
+    v = 'test =?BASE64?B?4oCm?='
+    eq_("test …", encodedword.mime_to_unicode(v))

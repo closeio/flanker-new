@@ -115,6 +115,9 @@ def _decode_part(charset, encoding, value):
         if paderr:
             value += '==='[:4 - paderr]
 
+        # Don't attempt to double-decode base64 -- assume UTF-8.
+        if charset == 'base64':
+            charset = 'utf-8'
         return charset, _email.decode_base64(value)
 
     if not encoding:
